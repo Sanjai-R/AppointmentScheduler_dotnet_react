@@ -10,21 +10,17 @@ namespace Server.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AppointmentID { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string Title { get; set; }
 
-        [Required]
         [MaxLength(255)]
         public string Description { get; set; }
 
         [Required]
         public DateTime Date { get; set; }
 
-        [Required]
         public TimeSpan Time { get; set; }
 
-        [Required]
         [MaxLength(50)]
         public string Status { get; set; }
 

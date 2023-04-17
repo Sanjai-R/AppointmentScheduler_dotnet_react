@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Text,
@@ -6,18 +6,46 @@ import {
   Flex,
   Heading,
   Icon,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { Link as ReactLink } from 'react-router-dom';
+import moment from 'moment';
+import { deleteAppointment } from '../API/appointment';
 
-const AppointmentCard = ({
-  title,
-  date,
-  time,
-  status,
-  location,
-  username,
-  userRole,
-}) => {
+const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
+  const { appointmentID, title, description, date, time } = appointment;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const isOutOfDate = () => {
+    const currentDate = moment();
+    const appointmentDateTime = moment(
+      `${date} ${time}`,
+      'YYYY-MM-DD HH:mm:ss'
+    );
+    if (appointmentDateTime.isBefore(currentDate)) {
+      return true;
+    }
+    return false;
+  };
+
+  const handleDelete = async () => {
+    const res = await deleteAppointment(appointmentID);
+    console.log(res);
+    if (res.status) {
+      onClose();
+      window.location.reload();
+    }
+    // onClose();
+  };
+
   return (
     <Box
       maxW="md"
@@ -34,28 +62,58 @@ const AppointmentCard = ({
         <Flex align="center" mb={2}>
           <Icon as={FaCalendarAlt} boxSize={4} color="gray.500" />
           <Text ml={2} fontSize="sm" color="gray.500">
-            {date}
+            {moment(date).format('MMM Do YY')}
           </Text>
         </Flex>
         <Flex align="center" mb={4}>
           <Icon as={FaClock} boxSize={4} color="gray.500" />
           <Text ml={2} fontSize="sm" color="gray.500">
-            {time}
+            {moment(time, 'HH:mm:ss').format('HH:mm:ss')}
           </Text>
         </Flex>
-        <Badge colorScheme={status === 'Confirmed' ? 'green' : 'red'}>
-          {status}
+        <Badge colorScheme={isOutOfDate() ? 'red' : 'green'}>
+          {isOutOfDate() ? 'Missed' : 'Scheduled'}
         </Badge>
-        <Text fontSize="sm" color="gray.500" mt={2}>
-          {location}
-        </Text>
-        {/* <Text fontSize="sm" color="gray.500" mt={2}>
-          Patient: {username}
-        </Text>
-        <Text fontSize="sm" color="gray.500" mt={2}>
-          Role: {userRole}
-        </Text> */}
+        <Text mt={4}>{description}</Text>
+        <Flex justify="flex-end" mt={4}>
+          <Button
+            variant="outline"
+            colorScheme="blue"
+            size="sm"
+            mr={2}
+            onClick={onEdit}
+            as={ReactLink}
+            to={`/update/${appointmentID}`}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            colorScheme="red"
+            size="sm"
+            onClick={onOpen}
+          >
+            Delete
+          </Button>
+        </Flex>
       </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Delete Appointment</ModalHeader>
+          <ModalBody>
+            Are you sure you want to delete this appointment?
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={handleDelete}>
+              Delete
+            </Button>
+            <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

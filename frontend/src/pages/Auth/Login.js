@@ -10,10 +10,13 @@ import {
   InputRightElement,
   Center,
   FormErrorMessage,
+  Heading,
+  Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Login } from '../../API/user';
 import { useNavigate } from 'react-router-dom';
+import { Link as ReactLink } from 'react-router-dom';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -23,7 +26,12 @@ export const LoginPage = () => {
     password: '',
   });
   const [errors, setErrors] = React.useState({});
-
+  useEffect(() => {
+    const userData = localStorage.getItem('userData');
+    if (JSON.parse(userData)) {
+      navigate('/');
+    }
+  }, []);
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData({
@@ -46,7 +54,10 @@ export const LoginPage = () => {
     } else {
       const data = await Login(formData);
       if (data.status) {
+        console.log(data.data);
+        localStorage.setItem('userData', JSON.stringify(data.data));
         navigate('/');
+        window.location.reload();
       }
       // If there are no errors, submit the form
       // You can call an API to handle form submission here
@@ -70,6 +81,9 @@ export const LoginPage = () => {
   return (
     <Center w="100vw" h="80vh">
       <Box rounded={'lg'} bg="white" w="380px" boxShadow={'lg'} p={6}>
+        <Heading size="lg" mb={6} textAlign="center">
+          Login
+        </Heading>
         <form onSubmit={handleSubmit} autoComplete="off">
           <Stack spacing={1}>
             <FormControl id="email" isInvalid={Boolean(errors.email)}>
@@ -101,11 +115,20 @@ export const LoginPage = () => {
               </InputGroup>
               <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
-            <Stack spacing={5} mt={10}>
+
+            <Stack spacing={5} mt={10} pt={3}>
               <Link color={'blue.400'}>Forgot password?</Link>
               <Button type="submit" colorScheme="blue">
                 Sign in
               </Button>
+            </Stack>
+            <Stack pt={6} w="100%">
+              <Text align={'center'}>
+                Don't have an Account?{' '}
+                <Link color={'blue.400'} as={ReactLink} to="/signup">
+                  signup
+                </Link>
+              </Text>
             </Stack>
           </Stack>
         </form>

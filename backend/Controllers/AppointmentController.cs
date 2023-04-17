@@ -27,6 +27,19 @@ namespace Server.Controllers
             return await _context.Appointment.ToListAsync();
         }
 
+        // GET: api/Appointment/GetAppointmentByUserId/{userId}
+        [HttpGet("GetAppointmentByUserId/{userId}")]
+        public async Task<ActionResult<IEnumerable<AppointmentModel>>> GetAppointmentByUserId(int userId)
+            {
+            // Fetch appointments based on user ID
+            var appointments = await _context.Appointment
+                                            .Where(a => a.UserID == userId)
+                                            .ToListAsync();
+
+            return appointments;
+            }
+
+
         // GET: api/Appointment/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AppointmentModel>> GetAppointmentModel(int id)
@@ -46,6 +59,7 @@ namespace Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAppointmentModel(int id, AppointmentModel appointmentModel)
         {
+            Console.WriteLine(appointmentModel.Description);
             if (id != appointmentModel.AppointmentID)
             {
                 return BadRequest();
@@ -77,6 +91,9 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<AppointmentModel>> PostAppointmentModel(AppointmentModel appointmentModel)
         {
+            Console.WriteLine("hey");
+            Console.WriteLine(appointmentModel.Title);
+            appointmentModel.Status = "Scheduled";
             _context.Appointment.Add(appointmentModel);
             await _context.SaveChangesAsync();
 

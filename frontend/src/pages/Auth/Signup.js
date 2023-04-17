@@ -9,10 +9,16 @@ import {
   Stack,
   Button,
   Select,
+  Heading,
+  HStack,
+  Text,
+  Link,
 } from '@chakra-ui/react';
 import { Signup } from '../../API/user';
-
+import { useNavigate } from 'react-router-dom';
+import { Link as ReactLink } from 'react-router-dom';
 export const SignupPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     UserName: '',
     Email: '',
@@ -47,10 +53,13 @@ export const SignupPage = () => {
       newErrors.Role = 'Role is required';
     }
     if (Object.keys(newErrors).length === 0) {
-      Signup(formData);
-      // console.log(data);
-      // Submit form or perform further action
-      // console.log('Form data:', formData);
+      const data = await Signup(formData);
+      if (data.status) {
+        console.log(data.data);
+        localStorage.setItem('userData', JSON.stringify(data.data));
+        navigate('/');
+        window.location.reload();
+      }
     }
     setErrors(newErrors);
   };
@@ -83,58 +92,64 @@ export const SignupPage = () => {
   ];
 
   return (
-    <Center w="100vw" h="80vh" mt="10">
-      <Box rounded={'lg'} bg="white" boxShadow={'lg'} w="420px" p={6}>
-        {inputFields.map(inputField => (
-          <FormControl
-            key={inputField.name}
-            isInvalid={Boolean(errors[inputField.name])}
-          >
-            <FormLabel htmlFor={inputField.name}>{inputField.label}</FormLabel>
-            <Input
-              id={inputField.name}
-              name={inputField.name}
-              type={inputField.type || 'text'}
-              placeholder={inputField.placeholder}
-              value={formData[inputField.name]}
-              onChange={handleChange}
-            />
-            <FormErrorMessage>{errors[inputField.name]}</FormErrorMessage>
-          </FormControl>
-        ))}
-
-        <FormControl
-          id="recoveryAnswer"
-          isInvalid={Boolean(errors.recoveryAnswer1)}
-        >
-          <FormLabel>Recovery Question</FormLabel>
-          <Stack>
-            <Select
-              name="RecoveryQuestion"
-              value={formData.RecoveryQuestion}
-              onChange={handleChange}
-              placeholder="Select a recovery question"
+    <Center w="100%">
+      <Box rounded={'lg'} bg="white" boxShadow={'lg'} px={6} py={4}>
+        <Heading mb={2} size="lg" textAlign="center">
+          Create Account
+        </Heading>
+        <Stack spacing={1}>
+          {inputFields.map(inputField => (
+            <FormControl
+              key={inputField.name}
+              isInvalid={Boolean(errors[inputField.name])}
             >
-              {recoveryQuestions.map((question, index) => (
-                <option key={index} value={question}>
-                  {question}
-                </option>
-              ))}
-            </Select>
-            <Input
-              type="text"
-              name="RecoveryAnswer"
-              value={formData.RecoveryAnswer}
-              onChange={handleChange}
-              placeholder="Enter your recovery answer"
-            />
+              <FormLabel htmlFor={inputField.name}>
+                {inputField.label}
+              </FormLabel>
+              <Input
+                id={inputField.name}
+                name={inputField.name}
+                type={inputField.type || 'text'}
+                placeholder={inputField.placeholder}
+                value={formData[inputField.name]}
+                onChange={handleChange}
+              />
+              <FormErrorMessage>{errors[inputField.name]}</FormErrorMessage>
+            </FormControl>
+          ))}
+          <FormControl
+            id="recoveryAnswer"
+            isInvalid={Boolean(errors.recoveryAnswer1)}
+          >
+            <FormLabel>Recovery Question</FormLabel>
+            <HStack>
+              <Select
+                name="RecoveryQuestion"
+                value={formData.RecoveryQuestion}
+                onChange={handleChange}
+                placeholder="Select a recovery question"
+              >
+                {recoveryQuestions.map((question, index) => (
+                  <option key={index} value={question}>
+                    {question}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                type="text"
+                name="RecoveryAnswer"
+                value={formData.RecoveryAnswer}
+                onChange={handleChange}
+                placeholder="Enter your recovery answer"
+              />
+            </HStack>
+            <FormErrorMessage>{errors.recoveryAnswer1}</FormErrorMessage>
+          </FormControl>
+          <Stack>
+            <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
+              Sign up
+            </Button>
           </Stack>
-          <FormErrorMessage>{errors.recoveryAnswer1}</FormErrorMessage>
-        </FormControl>
-        <Stack>
-          <Button mt={4} colorScheme="blue" onClick={handleSubmit}>
-            Sign up
-          </Button>
         </Stack>
       </Box>
     </Center>

@@ -17,7 +17,7 @@ namespace Server
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<AppointmentDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("appointmentDb")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("appointmentDb")));
 
             var app = builder.Build();
 
