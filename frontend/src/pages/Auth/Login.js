@@ -117,7 +117,9 @@ export const LoginPage = () => {
             </FormControl>
 
             <Stack spacing={5} mt={10} pt={3}>
-              <Link color={'blue.400'}>Forgot password?</Link>
+              <Link color={'blue.400'} as={ReactLink} to="/forgetPassword">
+                Forgot password?
+              </Link>
               <Button type="submit" colorScheme="blue">
                 Sign in
               </Button>

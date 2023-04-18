@@ -128,13 +128,94 @@ namespace Server.Controllers
                 return StatusCode(401, "Invalid password");
             }
 
-
             // Return user model
             return userModel;
         }
+
+        [HttpGet("SendOtp/email={email}")]
+        public async Task<IActionResult> SendOtp(string email)
+        {
+            Console.WriteLine($"email {email}");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                // User not found, handle error
+                return BadRequest("Invalid Email");
+            }
+            // Generate OTP
+            string otp = GenerateOTP();
+            user.RecoveryAnswer = otp;
+            // Send OTP to user's email
+            Server.handler.Email.testMail(otp, user.Email);
+            await _context.SaveChangesAsync();
+            // Return success response
+            return Ok(new{status=true,message= "OTP has been sent to your email for password reset." });
+        }
+
+        [HttpGet("VerifyOtp/otp={otp}/email={email}")]
+        public async Task<IActionResult> VerifyOtp(string otp,string email)
+            {
+            Console.WriteLine($"OTP {otp}");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                {
+                
+                // User not found, handle error
+                return BadRequest("Invalid Email");
+                }
+            Console.WriteLine(user.RecoveryAnswer);
+           if(user.RecoveryAnswer == otp)
+                {
+                user.RecoveryAnswer = "";
+                _context.SaveChangesAsync();
+                return NoContent();
+               
+                }
+            else
+                {
+                return BadRequest(new { status = false, message = "invalid Otp" });
+                }
+            
+            }
+
+        [HttpPut("ResetPassword")]
+        public async Task<IActionResult> GenerateResetPassword(UserModel user)
+            {
+            Console.WriteLine(user.Email);
+            // Retrieve user by email
+            var users = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+            if (users == null)
+                {
+                // User not found, handle error
+                return BadRequest("Invalid Email");
+                }
+
+            // Verify OTP
+       
+
+                // Update user's password
+                users.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                _context.SaveChanges();
+
+                // Return success response
+                return Ok(new { status = true, message = "Password has been reset successfully." });
+                
+
+         
+            }
+        private string GenerateOTP()
+        {
+            // Generate a 6-digit OTP
+            Random random = new Random();
+            int otp = random.Next(100000, 999999);
+            return otp.ToString();
+        }
+
         private bool UserModelExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
         }
+
     }
 }

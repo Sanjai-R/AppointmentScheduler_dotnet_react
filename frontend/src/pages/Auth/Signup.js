@@ -11,12 +11,10 @@ import {
   Select,
   Heading,
   HStack,
-  Text,
-  Link,
+
 } from '@chakra-ui/react';
 import { Signup } from '../../API/user';
 import { useNavigate } from 'react-router-dom';
-import { Link as ReactLink } from 'react-router-dom';
 export const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

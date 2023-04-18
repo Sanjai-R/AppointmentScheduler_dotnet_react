@@ -5,6 +5,8 @@ import CreateAppointmentPage from './pages/CreateAppointment';
 import UpdateAppointmentPage from './pages/UpdateAppointment';
 import EditSignupPage from './pages/Auth/Update';
 import ChangePasswordPage from './pages/Auth/ChangePassword';
+import ResetPasswordPage from './pages/Auth/ChangePassword';
+import ForgotPassword from './pages/Auth/ForgotPassword';
 
 const AppRoutes = [
   {
@@ -31,9 +33,12 @@ const AppRoutes = [
   },
   {
     path: '/changePassword',
-    element: <ChangePasswordPage />,
+    element: <ResetPasswordPage />,
   },
-
+  {
+    path: '/forgetPassword',
+    element: <ForgotPassword />,
+  },
   {
     path: '/signup',
     element: <SignupPage />,

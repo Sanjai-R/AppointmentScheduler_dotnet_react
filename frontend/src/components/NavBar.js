@@ -47,7 +47,7 @@ const NavBarProject = () => {
     >
       <Flex justify="space-between" alignItems="center">
         <Heading as="h1" fontWeight="900" fontSize="2xl">
-          Application Scheduler
+          Appointment Scheduler
         </Heading>
         <Flex gap={5} alignItems="baseline">
           {isLogged ? (

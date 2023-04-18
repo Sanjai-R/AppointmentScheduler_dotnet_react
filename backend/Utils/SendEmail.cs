@@ -1,90 +1,37 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-
-namespace EmailSender
-{
-    class Program
-    {
-        static void SendMail(string[] args)
-        {
-
-            try
-            {
-                // Gmail SMTP server settings
-                string smtpServer = "smtp.gmail.com";
-                int smtpPort = 587;
-                string email = "your-email@gmail.com"; // Replace with your Gmail email address
-                string password = "your-password"; // Replace with your Gmail password
-                // Recipient email address
-                string to = "recipient-email@example.com"; // Replace with the recipient's email address
-
-                // Create a new SMTP client
-                SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort);
-                smtpClient.EnableSsl = true;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(email, password);
-
-                // Create a new MailMessage object
-                MailMessage mail = new MailMessage();
-                mail.From = new MailAddress(email);
-                mail.To.Add(to);
-                mail.Subject = "Hello from ChatGPT!";
-                mail.Body = "This is a test email sent from ChatGPT using Gmail SMTP server.";
-
-                // Send the email
-                smtpClient.Send(mail);
-
-                Console.WriteLine("Email sent successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
-            }
-        }
-    }
-}
-
+using System.Threading;
+using Quartz;
+using Server.Controllers;
 namespace Server.handler
 {
-    public class MailHandler
+    public class EmailSender: IJob
     {
-        public static void SendMail(string recipient, string body)
+        public Task Execute(IJobExecutionContext context)
         {
-            try
+
+            // Code that sends a periodic email to the user (for example)
+            // Note: This method must always return a value 
+            // This is especially important for trigger listers watching job execution 
+            return Task.FromResult(true);
+        }
+        public static void sendMail(List<string> appointments, string email)
+        {
+            Console.WriteLine("Sent command triggered");
+            var client = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
             {
-                // Gmail SMTP server settings
-                string smtpServer = "smtp.gmail.com";
-                int smtpPort = 587;
-                string email = "your-email@gmail.com"; // Replace with your Gmail email address
-                string password = "your-password"; // Replace with your Gmail password
-
-                // Recipient email address
-                string to = "recipient-email@example.com"; // Replace with the recipient's email address
-
-                // Create a new SMTP client
-                SmtpClient smtpClient = new SmtpClient(smtpServer, smtpPort);
-                smtpClient.EnableSsl = true;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(email, password);
-
-                // Create a new MailMessage object
-                MailMessage mail = new MailMessage();
-                mail.From = new MailAddress(email);
-                mail.To.Add(to);
-                mail.Subject = "Hello from Sanjai!";
-                mail.Body = "This is a test email sent from Sanjai using Gmail SMTP server.";
-
-                // Send the email
-                smtpClient.Send(mail);
-
-                Console.WriteLine("Email sent successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
-            }
+                Credentials = new NetworkCredential("4daaba8a7d07e1", "3b89834d6b44a8"),
+                EnableSsl = true
+            };
+            MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("from@example.com");
+            mail.To.Add(email);
+            mail.Subject = "Daily Appointments";
+            mail.Body = string.Join(Environment.NewLine, appointments);
+            client.Send(mail);
+            Console.WriteLine("Sent");
         }
     }
-
 }

@@ -30,20 +30,26 @@ namespace Server.Controllers
         // GET: api/Appointment/GetAppointmentByUserId/{userId}
         [HttpGet("GetAppointmentByUserId/{userId}")]
         public async Task<ActionResult<IEnumerable<AppointmentModel>>> GetAppointmentByUserId(int userId)
-            {
+        {
+            var email = await _context.Users.FindAsync(userId);
+            List<string> appointmentsList = new List<string>();
+
             // Fetch appointments based on user ID
             var appointments = await _context.Appointment
                                             .Where(a => a.UserID == userId)
                                             .ToListAsync();
+            appointments.ForEach(a => appointmentsList.Add(a.Title + " " + a.Description + " " + a.Date + " " + a.Time));
 
+            // Server.handler.fakeEmail.sendMail(appointmentsList, email.Email);
             return appointments;
-            }
+        }
 
 
         // GET: api/Appointment/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AppointmentModel>> GetAppointmentModel(int id)
         {
+
             var appointmentModel = await _context.Appointment.FindAsync(id);
 
             if (appointmentModel == null)

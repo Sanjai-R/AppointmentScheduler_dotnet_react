@@ -20,7 +20,7 @@ import { Link as ReactLink } from 'react-router-dom';
 import moment from 'moment';
 import { deleteAppointment } from '../API/appointment';
 
-const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
+const AppointmentCard = ({ appointment }) => {
   const { appointmentID, title, description, date, time } = appointment;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -72,7 +72,7 @@ const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
           </Text>
         </Flex>
         <Badge colorScheme={isOutOfDate() ? 'red' : 'green'}>
-          {isOutOfDate() ? 'Missed' : 'Scheduled'}
+          {isOutOfDate() ? 'Completed' : 'Upcoming'}
         </Badge>
         <Text mt={4}>{description}</Text>
         <Flex justify="flex-end" mt={4}>
@@ -81,7 +81,6 @@ const AppointmentCard = ({ appointment, onDelete, onEdit }) => {
             colorScheme="blue"
             size="sm"
             mr={2}
-            onClick={onEdit}
             as={ReactLink}
             to={`/update/${appointmentID}`}
           >

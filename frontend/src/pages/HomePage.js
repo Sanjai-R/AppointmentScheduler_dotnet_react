@@ -23,6 +23,7 @@ const AppointmentsList = () => {
   const [sortCriteria, setSortCriteria] = useState('date');
   const [sortOrder, setSortOrder] = useState('asc');
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -48,32 +49,40 @@ const AppointmentsList = () => {
     fetchData();
   }, []);
 
-  // Define onDelete and onEdit callbacks for handling delete and edit actions
-  const handleDelete = appointmentId => {
-    // Implement logic for deleting appointment with appointmentId
-    console.log(`Deleting appointment with ID: ${appointmentId}`);
-  };
-
-  const handleEdit = appointmentId => {
-    // Implement logic for editing appointment with appointmentId
-    console.log(`Editing appointment with ID: ${appointmentId}`);
-  };
 
   // Sort appointments based on sortCriteria and sortOrder
-  const sortAppointments = () => {
-    if (sortOrder === 'asc') {
-      return appointments.sort(sortBy(sortCriteria));
-    } else {
-      return appointments.sort(sortBy(sortCriteria)).reverse();
-    }
-  };
-  const [query, setQuery] = useState('');
+ const sortAppointments = () => {
+   if (sortCriteria === 'upcoming') {
+     const currentDate = new Date();
+     return appointments.filter(appointment => {
+       const appointmentDate = new Date(appointment.date);
+       return appointmentDate >= currentDate;
+     });
+   } else {
+     let sortedAppointments = [...appointments].sort(sortBy(sortCriteria));
+     if (sortOrder === 'desc') {
+       sortedAppointments.reverse();
+     }
+     console.log(matchSorter(sortedAppointments, query, { keys: ['title'] }));
+     return sortedAppointments;
+   }
+ };
+
+
   // Handle filter button click
   const handleFilterClick = (criteria, order) => {
-    setSortCriteria(criteria);
-    setSortOrder(order);
+    if (criteria === 'upcoming') {
+      setSortCriteria(criteria);
+    } else {
+      setSortCriteria(criteria);
+      setSortOrder(order);
+    }
   };
-  const filterBtnData = [{ title: 'date' }, { title: 'time' }];
+  const filterBtnData = [
+    { title: 'date' },
+    { title: 'time' },
+    { title: 'upcoming' },
+  ];
   return (
     <Box w="100%">
       {loading ? (
@@ -103,7 +112,10 @@ const AppointmentsList = () => {
                     )
                   }
                 >
-                  Sort by {item.title}
+                  {item.title === 'upcoming'
+                    ? 'Upcoming'
+                    : `Sort by ${item.title}`}
+
                   {sortCriteria === item.title && (
                     <Box ml={1} as="span" fontSize="sm">
                       {sortOrder === 'asc' ? (
@@ -124,16 +136,12 @@ const AppointmentsList = () => {
             <p>No appointments found.</p>
           ) : (
             <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={4}>
-              {matchSorter(sortAppointments(), query, { keys: ['title'] }).map(
-                appointment => (
-                  <AppointmentCard
-                    key={appointment.appointmentID}
-                    appointment={appointment}
-                    onDelete={() => handleDelete(appointment.appointmentID)}
-                    onEdit={() => handleEdit(appointment.appointmentID)}
-                  />
-                )
-              )}
+              {sortAppointments().map(appointment => (
+                <AppointmentCard
+                  key={appointment.appointmentID}
+                  appointment={appointment}
+                />
+              ))}
             </SimpleGrid>
           )}
         </Box>
