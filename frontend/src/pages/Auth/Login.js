@@ -38,7 +38,7 @@ export const LoginPage = () => {
       ...formData,
       [name]: value,
     });
-    // Clear any previous errors for the field
+    
     setErrors({
       ...errors,
       [name]: '',
@@ -49,7 +49,7 @@ export const LoginPage = () => {
     e.preventDefault();
     const newErrors = validateForm(formData);
     if (Object.keys(newErrors).length > 0) {
-      // If there are errors, set the state with the new errors
+      
       setErrors(newErrors);
     } else {
       const data = await Login(formData);
@@ -59,8 +59,8 @@ export const LoginPage = () => {
         navigate('/');
         window.location.reload();
       }
-      // If there are no errors, submit the form
-      // You can call an API to handle form submission here
+      
+      
       console.log('Form submitted:', formData);
     }
   };

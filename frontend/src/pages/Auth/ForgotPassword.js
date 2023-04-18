@@ -8,7 +8,7 @@ import {
   Input,
   Button,
   Text,
-  useToast, // Import useToast from Chakra UI
+  useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/constant';
@@ -19,18 +19,17 @@ const ForgotPasswordPage = () => {
   const [error, setError] = useState('');
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Add isLoading state for loading button
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const toast = useToast(); // Initialize toast
+  const toast = useToast();
 
   const handleSubmit = async () => {
-    // Make API call to reset password endpoint with email
     try {
-      setIsLoading(true); // Set isLoading to true when making API call
+      setIsLoading(true);
       const response = await axios.get(
         `${BASE_URL}/User/SendOtp/email=${email}`
       );
-      setIsLoading(false); // Set isLoading to false after API call is complete
+      setIsLoading(false);
       if (response.status === 200) {
         setShowOtp(true);
         toast({
@@ -42,27 +41,24 @@ const ForgotPasswordPage = () => {
         });
       }
     } catch (error) {
-      setIsLoading(false); // Set isLoading to false on API call error
-      // Handle network or server error
+      setIsLoading(false);
       setError('An error occurred. Please try again later.');
     }
   };
 
   const verifyOtp = async () => {
-    // Make API call to reset password endpoint with email
     try {
-      setIsLoading(true); // Set isLoading to true when making API call
+      setIsLoading(true);
       const response = await axios.get(
         `${BASE_URL}/User/VerifyOtp/otp=${otp}/email=${email}`
       );
       console.log(response);
-      setIsLoading(false); // Set isLoading to false after API call is complete
+      setIsLoading(false);
       if (response.status === 204) {
         navigate('/changePassword', { state: { email: email } });
       }
     } catch (error) {
-      setIsLoading(false); // Set isLoading to false on API call error
-      // Handle network or server error
+      setIsLoading(false);
       setError('An error occurred. Please try again later.');
     }
   };
@@ -87,7 +83,7 @@ const ForgotPasswordPage = () => {
               placeholder="Enter the Otp"
               value={otp}
               onChange={e => setOtp(e.target.value)}
-              borderColor={error ? 'red.500' : 'gray.300'} //
+              borderColor={error ? 'red.500' : 'gray.300'}
             />
           </FormControl>
         )}
@@ -99,8 +95,8 @@ const ForgotPasswordPage = () => {
         <Button
           onClick={() => (showOtp ? verifyOtp : handleSubmit)()}
           colorScheme="blue"
-          isLoading={isLoading} // Set isLoading prop on Button component
-          loadingText="Submitting..." // Set custom loading text
+          isLoading={isLoading}
+          loadingText="Submitting..."
           mb={4}
         >
           {showOtp ? 'Verify OTP' : 'Send OTP'}

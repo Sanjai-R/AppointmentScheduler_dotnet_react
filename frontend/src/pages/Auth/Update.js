@@ -14,18 +14,15 @@ import {
   Text,
   Link,
 } from '@chakra-ui/react';
-// import { Signup, getUserById, updateUser } from '../../API/user'; // Update the import statement to include the appropriate API functions
-import { useNavigate, useParams } from 'react-router-dom'; // Import useParams to get the user ID from URL
+
 import { getUserById } from '../../API/user';
 
 export const EditSignupPage = () => {
-  const navigate = useNavigate();
-  //   const { userId } = useParams(); // Get the user ID from URL params
   const userId = 6;
   const [formData, setFormData] = useState({
     UserName: '',
     Email: '',
-    // Password: '',
+
     Role: '',
     RecoveryQuestion: '',
     RecoveryAnswer: '',
@@ -33,17 +30,16 @@ export const EditSignupPage = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Fetch user data based on user ID on component mount
     const fetchUserData = async () => {
       try {
         const user = await getUserById(userId);
         if (user.status) {
           console.log(user.data);
-          // Set the fetched user data in the form data state
+
           setFormData({
             UserName: user.data.userName,
             Email: user.data.email,
-            // Password: user.data.password,
+
             Role: user.data.role,
             RecoveryQuestion: user.data.recoveryQuestion,
             RecoveryAnswer: user.data.recoveryAnswer,
@@ -67,7 +63,6 @@ export const EditSignupPage = () => {
   };
 
   const handleSubmit = async () => {
-    // Perform validation logic
     const newErrors = {};
     if (!formData.UserName) {
       newErrors.UserName = 'UserName is required';
@@ -82,12 +77,6 @@ export const EditSignupPage = () => {
       newErrors.Role = 'Role is required';
     }
     if (Object.keys(newErrors).length === 0) {
-      //   const data = await updateUser(userId, formData); // Call the appropriate API function to update user data
-      //   if (data.status) {
-      //     console.log(data.data);
-      //     navigate('/'); // Navigate to homepage after successful update
-      //     window.location.reload();
-      //   }
     }
     setErrors(newErrors);
   };

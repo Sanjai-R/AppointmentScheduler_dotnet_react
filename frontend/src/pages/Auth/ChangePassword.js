@@ -21,8 +21,7 @@ import {
 const ResetPasswordPage = () => {
   const toast = useToast();
   const location = useLocation();
-  //   const history = useHistory();
-  const { id } = useParams();
+
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +37,6 @@ const ResetPasswordPage = () => {
     setIsLoading(true);
     console.log(email);
     try {
-      // Send PUT request to backend API
       const response = await fetch(
         'http://localhost:5024/api/User/ResetPassword',
         {
@@ -46,12 +44,11 @@ const ResetPasswordPage = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ Email: email, Password: password }), // Send email and new password in JSON body
+          body: JSON.stringify({ Email: email, Password: password }),
         }
       );
 
       if (response.ok) {
-        // Display success toast notification
         toast({
           title: 'Password Reset',
           description: 'Your password has been reset successfully.',
@@ -60,15 +57,11 @@ const ResetPasswordPage = () => {
           isClosable: true,
         });
         navigate('/login');
-        // Redirect to login page
-        // history.push('/login');
       } else {
-        // Handle error response
         const errorData = await response.json();
         setError(errorData.message || 'Failed to reset password.');
       }
     } catch (error) {
-      // Handle fetch error
       setError('Failed to reset password. Please try again later.');
     }
 
